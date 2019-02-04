@@ -2,3 +2,4 @@ venv/
 original_data/
 output_data/
 chromedriver
+.DS_Store

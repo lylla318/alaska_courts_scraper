@@ -17,22 +17,23 @@ from selenium.common.exceptions import TimeoutException
 
 class Scraper:
 
-	def __init__(self, filename):
+	def __init__(self, input_file, output_file):
 
-		self.filename = filename
+		self.input_file  = input_file
+		self.output_file = output_file
 		self.case_nums = self.read_case_numbers()
 		self.case_data = collections.defaultdict(dict)
+		self.cases_not_found = 0
 
 		for i in range(len(self.case_nums)):
 			case = self.case_nums[i]
 			print("Scraping case " + str(i) + ", number " + case)
-			if(i < 5):
-				self.case_data[case] = self.search(case)
-				print(json.dumps(self.case_data))
-
-		# print(self.case_data)
-		# print(JSON.stringify(case_data))
-		# self.write_data()
+			self.case_data[case] = self.search(case)
+			if(len((self.case_data[case]).keys()) == 0):
+				self.cases_not_found += 1
+		
+		print("Cases not found: " + str(self.cases_not_found))
+		self.write_data()
 
 
 
@@ -179,9 +180,10 @@ class Scraper:
 	def read_case_numbers(self):
 
 		case_nums = []
-		with open(self.filename) as csvfile:
+		with open(self.input_file) as csvfile:
 			reader = csv.reader(csvfile)
 			for row in reader:
+				print(row)
 				x = row[0].replace("\xef\xbb\xbf","")
 				case_nums.append(x.replace("\xc2\xa0",""))
 
@@ -189,12 +191,14 @@ class Scraper:
 
 	# Write output.
 	def write_data(self):
-		return 0
+		with open(self.output_file, "w") as outfile:
+			json.dump(self.case_data, outfile)
 		
 
 
 if __name__ == '__main__':
 
-	filename = "original_data/alaska_sex_crime_charges.csv"
-	instance = Scraper(filename)
+	input_file  = "original_data/alaska_sex_crime_charges.csv"
+	output_file = "output_data/output.json"
+	instance = Scraper(input_file, output_file)
 

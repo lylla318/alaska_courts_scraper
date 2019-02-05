@@ -25,10 +25,17 @@ class Scraper:
 		self.case_data = collections.defaultdict(dict)
 		self.cases_not_found = 0
 
+		# self.case_nums = ["1HA-14-00014CR"]
+
 		for i in range(len(self.case_nums)):
 			case = self.case_nums[i]
-			print("Scraping case " + str(i) + ", number " + case)
-			self.case_data[case] = self.search(case)
+			print("Scraping case " + str(i) + " of " + str(len(self.case_nums)) + " cases, number " + case)
+			try:
+				self.case_data[case] = self.search(case)
+			except:
+				print("Error retrieving info.")
+				self.case_data[case] = {}
+
 			if(len((self.case_data[case]).keys()) == 0):
 				self.cases_not_found += 1
 		
@@ -74,14 +81,17 @@ class Scraper:
 
 			if(link.text == case_no):
 
-				button = driver.find_element_by_id('grid$row:1$cell:3$link')
-				button.click()
+				try:
+					button = driver.find_element_by_id('grid$row:1$cell:3$link')
+					button.click()
+				except:
+					print("Waiting for page load...")
 
 				# Wait for page load.
 				try:
 					driver.find_element_by_id('caseHeader')
 				except:
-					time.sleep(1)
+					time.sleep(2)
 
 				# Set up the new scraper.
 				html = driver.page_source
@@ -183,7 +193,6 @@ class Scraper:
 		with open(self.input_file) as csvfile:
 			reader = csv.reader(csvfile)
 			for row in reader:
-				print(row)
 				x = row[0].replace("\xef\xbb\xbf","")
 				case_nums.append(x.replace("\xc2\xa0",""))
 

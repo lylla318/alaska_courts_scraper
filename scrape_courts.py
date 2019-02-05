@@ -25,7 +25,7 @@ class Scraper:
 		self.case_data = collections.defaultdict(dict)
 		self.cases_not_found = 0
 
-		# self.case_nums = ["1HA-14-00014CR"]
+		self.case_nums = ["1HA-14-00014CR"]
 
 		for i in range(len(self.case_nums)):
 			case = self.case_nums[i]
@@ -149,8 +149,7 @@ class Scraper:
 						# Grab additoinal charge information.
 						chrg_phase = charge.find('div', {'class': 'chgPhase'})
 						chrg_offense = charge.find('div', {'class': 'chgOffense'})
-						chrg_disposition = charge.find('div', {'class': 'chgDisp'})
-						chrg_boxes = [chrg_phase, chrg_offense, chrg_disposition]
+						chrg_boxes = [chrg_phase, chrg_offense]
 
 						for box in chrg_boxes:
 							if(box):
@@ -160,6 +159,22 @@ class Scraper:
 										label = self.form_str(ul.find("li", {"class":"ptyChgLabel"}).text)
 										info  = self.form_str(ul.find("li", {"class":"ptyChgInfo"}).text)
 										tmp[label] = info
+
+						try:
+							chrg_disposition = charge.find('div', {'class': 'chgDisp'})
+							if(chrg_disposition):
+								chrg_disposition = chrg_disposition.find({'div', 'chrDispContainer'})
+								chrg_disposition = chrg_disposition.find('div', 'rowodd')
+								disp_date = self.form_str((chrg_disposition.find('div', 'dspDtField')).text)
+								disp_text = self.form_str((chrg_disposition.find('div', 'dspCdField')).text)
+								tmp["dispDate"] = disp_date
+								tmp["dispText"] = disp_text
+							else:
+								tmp["dispDate"] = "-"
+								tmp["dispText"] = "missing"
+						except:
+							tmp["dispDate"] = "-"
+							tmp["dispText"] = "missing"
 
 						# Add charge to charge list.
 						if(len(tmp.keys()) > 0):

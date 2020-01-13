@@ -25,7 +25,7 @@ class Scraper:
 		self.case_data = collections.defaultdict(dict)
 		self.cases_not_found = 0
 
-		self.case_nums = ["1HA-14-00014CR"]
+		# self.case_nums = ["1HA-14-00014CR"] # TESTING
 
 		for i in range(len(self.case_nums)):
 			case = self.case_nums[i]
@@ -51,7 +51,7 @@ class Scraper:
 		chrome_path = os.path.realpath('chromedriver')
 		chrome_options = Options()
 		chrome_options.add_experimental_option("detach", True)
-		driver = webdriver.Chrome(executable_path='/Users/lyllayounes/Documents/alaska_scraping/chromedriver', chrome_options=chrome_options)
+		driver = webdriver.Chrome(executable_path='/Users/lyllayounes/Documents/lrn_github/ak_daily_scraping/chromedriver', chrome_options=chrome_options)
 		page = driver.get( 'https://records.courts.alaska.gov/eaccess/home.page.2' )
 		
 		# Go to case lookup.
